@@ -9,19 +9,27 @@ import Input from "@/components/shared/Input";
 import { LoginSchema } from "@/validations/auth";
 import { loginInitialValues } from "@/initials/auth";
 import Link from "next/link";
+import axiosInstance from "@/libs/axios";
 
 export default function LoginPage() {
   const router = useRouter();
 
   const handleSubmit = async (values: typeof loginInitialValues, { setSubmitting }: any) => {
+    setSubmitting(true);
     try {
-      // Simulate API call using axios
-      // const response = await axios.post('/api/auth/login', values);
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      toast.success("Logged in successfully!");
+      const response = await axiosInstance.post("/auth/login", values);
+      
+      // Save the token to local storage
+      if (response.data?.token) {
+        localStorage.setItem("accessToken", response.data.token);
+      }
+      
+      toast.success("Successfully logged in!");
       router.push("/dashboard");
-    } catch (error) {
-      toast.error("Invalid credentials. Please try again.");
+    } catch (error: any) {
+      toast.error(
+        error.response?.data?.message || "Invalid credentials. Please try again."
+      );
     } finally {
       setSubmitting(false);
     }

@@ -1,7 +1,7 @@
 "use client";
 
 import { Formik, Form } from "formik";
-import axios from "axios";
+import axiosInstance from "@/libs/axios";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import AuthLayout from "@/components/AuthLayout";
@@ -14,13 +14,18 @@ export default function SignupPage() {
 
   const handleSubmit = async (values: typeof signupInitialValues, { setSubmitting }: any) => {
     try {
-      // Simulate API call using axios
-      // const response = await axios.post('/api/auth/signup', values);
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const response = await axiosInstance.post("/auth/register", values);
+      
+      if (response.data?.token) {
+        localStorage.setItem("accessToken", response.data.token);
+      }
+      
       toast.success("Account created successfully!");
-      router.push("/login");
-    } catch (error) {
-      toast.error("Something went wrong during signup. Please try again.");
+      router.push("/dashboard");
+    } catch (error: any) {
+      toast.error(
+        error.response?.data?.message || "Something went wrong during signup. Please try again."
+      );
     } finally {
       setSubmitting(false);
     }
