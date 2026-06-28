@@ -3,8 +3,23 @@
 import { Search, Bell } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect, useRef } from "react";
 
 export default function TopNav() {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "f") {
+        e.preventDefault();
+        inputRef.current?.focus();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   return (
     <header className="w-full flex justify-between items-start z-10 sticky top-0 pt-2">
       
@@ -14,9 +29,10 @@ export default function TopNav() {
           <Search size={18} className="text-gray-400" />
         </div>
         <input
+          ref={inputRef}
           type="text"
           placeholder="Search or type a command"
-          className="w-full pl-11 pr-12 py-3.5 bg-white border border-transparent rounded-full text-sm font-medium focus:outline-none placeholder:text-gray-400"
+          className="w-full pl-11 pr-12 py-3.5 bg-white border border-transparent rounded-full text-sm font-medium text-black focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-gray-400"
         />
         <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
           <span className="text-xs font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded-md">⌘F</span>
